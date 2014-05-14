@@ -18,16 +18,12 @@ class foreman::install::repos::extra(
 
   if $configure_scl_repo {
     case $::operatingsystem {
-      CentOS: {
-        yumrepo { 'SCL':
-          descr    => 'CentOS Software Collections',
-          baseurl  => 'http://mirror.centos.org/centos/$releasever/SCL/$basearch/',
-          enabled  => 1,
-          gpgcheck => 1,
-          gpgkey   => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-${osreleasemajor}",
+      'CentOS': {
+        package {'centos-release-SCL':
+          ensure => installed,
         }
       }
-      Scientific: {
+      'Scientific': {
         yumrepo { 'SCL':
           descr    => 'Scientific Linux Software Collections',
           baseurl  => "http://ftp.scientificlinux.org/linux/scientific/${osreleasemajor}/\$basearch/external_products/softwarecollections/",

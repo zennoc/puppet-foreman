@@ -58,12 +58,12 @@ class foreman::params {
 
   # OS specific paths
   case $::osfamily {
-    RedHat: {
+    'RedHat': {
       $init_config = '/etc/sysconfig/foreman'
       $init_config_tmpl = 'foreman.sysconfig'
 
       case $::operatingsystem {
-        fedora: {
+        'fedora': {
           $puppet_basedir  = '/usr/share/ruby/vendor_ruby/puppet'
           $yumcode = "f${::operatingsystemrelease}"
           $passenger_scl = undef
@@ -78,16 +78,16 @@ class foreman::params {
         }
       }
     }
-    Debian: {
+    'Debian': {
       $puppet_basedir  = '/usr/lib/ruby/vendor_ruby/puppet'
       $passenger_scl = undef
       $plugin_prefix = 'ruby-foreman-'
       $init_config = '/etc/default/foreman'
       $init_config_tmpl = 'foreman.default'
     }
-    Linux: {
+    'Linux': {
       case $::operatingsystem {
-        Amazon: {
+        'Amazon': {
           $puppet_basedir = regsubst($::rubyversion, '^(\d+\.\d+).*$', '/usr/lib/ruby/site_ruby/\1/puppet')
           $yumcode = 'el6'
           # add passenger::install::scl as EL uses SCL on Foreman 1.2+
@@ -101,7 +101,7 @@ class foreman::params {
         }
       }
     }
-    ArchLinux: {
+    'ArchLinux': {
       # Only the agent classes (cron / service) are supported for now, which
       # doesn't require any OS-specific params
     }
@@ -111,18 +111,19 @@ class foreman::params {
   }
   $puppet_home = '/var/lib/puppet'
   $puppet_user = 'puppet'
+  $lower_fqdn = downcase($::fqdn)
 
   # If CA is specified, remote Foreman host will be verified in reports/ENC scripts
   $client_ssl_ca   = "${puppet_home}/ssl/certs/ca.pem"
   # Used to authenticate to Foreman, required if require_ssl_puppetmasters is enabled
-  $client_ssl_cert = "${puppet_home}/ssl/certs/${::fqdn}.pem"
-  $client_ssl_key  = "${puppet_home}/ssl/private_keys/${::fqdn}.pem"
+  $client_ssl_cert = "${puppet_home}/ssl/certs/${lower_fqdn}.pem"
+  $client_ssl_key  = "${puppet_home}/ssl/private_keys/${lower_fqdn}.pem"
 
   # Set these values if you want Passenger to serve a CA-provided cert instead of puppet's
   $server_ssl_ca    = "${puppet_home}/ssl/certs/ca.pem"
   $server_ssl_chain = "${puppet_home}/ssl/certs/ca.pem"
-  $server_ssl_cert  = "${puppet_home}/ssl/certs/${::fqdn}.pem"
-  $server_ssl_key   = "${puppet_home}/ssl/private_keys/${::fqdn}.pem"
+  $server_ssl_cert  = "${puppet_home}/ssl/certs/${lower_fqdn}.pem"
+  $server_ssl_key   = "${puppet_home}/ssl/private_keys/${lower_fqdn}.pem"
 
   # We need the REST API interface with OAuth for some REST Puppet providers
   $oauth_active = true

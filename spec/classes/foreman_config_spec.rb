@@ -69,7 +69,7 @@ describe 'foreman::config' do
 
       it { should contain_user('foreman').with({
         'ensure'  => 'present',
-        'shell'   => '/sbin/nologin',
+        'shell'   => '/bin/false',
         'comment' => 'Foreman',
         'gid'     => 'foreman',
         'groups'  => ['puppet'],
@@ -82,10 +82,12 @@ describe 'foreman::config' do
         should contain_cron('daily summary').with_ensure('absent')
       end
 
-      it { should contain_class('foreman::config::passenger').with({
-        :listen_on_interface => '',
-        :scl_prefix          => 'ruby193',
-      })}
+      it 'should contain foreman::config::passenger' do
+        should contain_class('foreman::config::passenger').
+          with_listen_on_interface('').
+          with_scl_prefix('ruby193').
+          that_comes_before('Anchor[foreman::config_end]')
+      end
     end
 
     describe 'without passenger' do
@@ -201,7 +203,7 @@ describe 'foreman::config' do
 
       it { should contain_user('foreman').with({
         'ensure'  => 'present',
-        'shell'   => '/sbin/nologin',
+        'shell'   => '/bin/false',
         'comment' => 'Foreman',
         'gid'     => 'foreman',
         'groups'  => ['puppet'],
