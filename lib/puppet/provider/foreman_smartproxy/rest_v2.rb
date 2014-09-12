@@ -17,8 +17,10 @@ Puppet::Type.type(:foreman_smartproxy).provide(:rest_v2) do
       },
       :timeout => resource[:timeout],
       :headers => {
-        :foreman_user => resource[:effective_user]
-      }}).resource(:smart_proxies)
+        :foreman_user => resource[:effective_user],
+      },
+      :apidoc_cache_base_dir => File.join(Puppet[:vardir], 'apipie_bindings')
+    }).resource(:smart_proxies)
   end
 
   # proxy hash or nil
@@ -56,6 +58,10 @@ Puppet::Type.type(:foreman_smartproxy).provide(:rest_v2) do
 
   def url=(value)
     api.call(:update, :id => id, :url => value)
+  end
+
+  def refresh_features!
+    api.call(:refresh, :id => id)
   end
 
 end
